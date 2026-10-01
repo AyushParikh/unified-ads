@@ -1,28 +1,9 @@
 import { NextResponse } from "next/server";
-import { GoogleAdsApi, enums, errors, toMicros, ResourceNames, resources, MutateOperation } from "google-ads-api";
+import { enums, ResourceNames, resources, MutateOperation } from "google-ads-api";
+import { getCustomer, describeError } from "@/lib/ads";
 import { validate, type AdInput } from "@/lib/validate";
 
 export const runtime = "nodejs";
-
-function env(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var ${name}`);
-  return v;
-}
-
-type ErrorDetail = { field?: string; message: string };
-
-function describeError(err: unknown): ErrorDetail[] {
-  if (err instanceof errors.GoogleAdsFailure) {
-    return err.errors.map((e) => ({
-      field: e.location?.field_path_elements
-        ?.map((p) => (p.index != null ? `${p.field_name}[${p.index}]` : p.field_name))
-        .join("."),
-      message: e.message ?? "Unknown Google Ads error",
-    }));
-  }
-  return [{ message: err instanceof Error ? err.message : String(err) }];
-}
 
 export async function POST(req: Request) {
   const input = (await req.json()) as AdInput;
@@ -32,17 +13,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const customerId = env("GOOGLE_ADS_CUSTOMER_ID");
-    const client = new GoogleAdsApi({
-      client_id: env("GOOGLE_ADS_CLIENT_ID"),
-      client_secret: env("GOOGLE_ADS_CLIENT_SECRET"),
-      developer_token: env("GOOGLE_ADS_DEVELOPER_TOKEN"),
-    });
-    const customer = client.Customer({
-      customer_id: customerId,
-      login_customer_id: env("GOOGLE_ADS_LOGIN_CUSTOMER_ID"),
-      refresh_token: env("GOOGLE_ADS_REFRESH_TOKEN"),
-    });
+    const { customer, customerId } = getCustomer();
 
     // Resolve the location name to a geo target constant.
     const geo = await customer.geoTargetConstants.suggestGeoTargetConstants({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CampaignList from "./campaign-list";
 import { LIMITS, parseKeywords, validate, type AdInput } from "@/lib/validate";
 
 type Result =
@@ -26,6 +27,7 @@ export default function Home() {
   const [headlines, setHeadlines] = useState(["", "", ""]);
   const [descriptions, setDescriptions] = useState(["", ""]);
   const [keywords, setKeywords] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,6 +55,7 @@ export default function Home() {
         body: JSON.stringify(data),
       });
       const body = await res.json();
+      if (res.ok) setRefreshKey((k) => k + 1);
       setResult(res.ok ? { ok: true, ...body } : { ok: false, errors: body.errors ?? [{ message: "Request failed." }] });
     } catch (err) {
       setResult({ ok: false, errors: [{ message: String(err) }] });
@@ -168,6 +171,8 @@ export default function Home() {
           </a>
         </div>
       )}
+
+      <CampaignList refreshKey={refreshKey} />
     </main>
   );
 }
