@@ -10,7 +10,26 @@ export type AdInput = {
   keywords: string[];
 };
 
-export const LIMITS = { headline: 30, description: 90, minKeywords: 5, maxKeywords: 10 };
+export type MetaAdInput = {
+  businessName: string;
+  websiteUrl: string;
+  primaryText: string;
+  headline: string;
+  description?: string;
+  dailyBudget: number;
+  location: string;
+  imageUrl: string;
+};
+
+export const LIMITS = {
+  headline: 30,
+  description: 90,
+  minKeywords: 5,
+  maxKeywords: 10,
+  metaHeadline: 40,
+  metaPrimaryText: 125,
+  metaDescription: 30,
+};
 
 export function parseKeywords(raw: string): string[] {
   const seen = new Set<string>();
@@ -19,6 +38,34 @@ export function parseKeywords(raw: string): string[] {
     if (t) seen.add(t.toLowerCase());
   }
   return [...seen];
+}
+
+export function validateMeta(i: MetaAdInput): string[] {
+  const e: string[] = [];
+  if (!i.businessName?.trim()) e.push("Business name is required.");
+  try {
+    const u = new URL(i.websiteUrl);
+    if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error();
+  } catch {
+    e.push("Website URL must start with http:// or https://.");
+  }
+  try {
+    const u = new URL(i.imageUrl);
+    if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error();
+  } catch {
+    e.push("Image URL must start with http:// or https://.");
+  }
+  if (!i.primaryText?.trim()) e.push("Primary text is required.");
+  else if (i.primaryText.length > LIMITS.metaPrimaryText)
+    e.push(`Primary text is over ${LIMITS.metaPrimaryText} characters.`);
+  if (!i.headline?.trim()) e.push("Headline is required.");
+  else if (i.headline.length > LIMITS.metaHeadline)
+    e.push(`Headline is over ${LIMITS.metaHeadline} characters.`);
+  if (i.description && i.description.length > LIMITS.metaDescription)
+    e.push(`Description is over ${LIMITS.metaDescription} characters.`);
+  if (!(i.dailyBudget >= 1)) e.push("Daily budget must be at least 1.");
+  if (!i.location?.trim()) e.push("Target location is required.");
+  return e;
 }
 
 export function validate(i: AdInput): string[] {

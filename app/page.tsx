@@ -5,7 +5,7 @@ const d = (s: number) => ({ "--d": `${s}s` }) as Css;
 
 const platforms = [
   { name: "Google Ads", dot: "#4285f4", live: true },
-  { name: "Meta Ads", dot: "#0866ff", live: false },
+  { name: "Meta Ads", dot: "#0866ff", live: true },
   { name: "TikTok Ads", dot: "#25f4ee", live: false },
   { name: "And more", dot: "#e8421c", live: false },
 ];
@@ -18,8 +18,8 @@ const campaigns = [
 ];
 
 const pillars = [
-  ["01", "Create once", "Write your headlines, copy and budget one time. Unified Ads builds the campaign for each platform, in that platform's own format.", "Google live · Meta, TikTok soon"],
-  ["02", "Manage in one place", "Every campaign and its status in a single list. Pause, review or delete without opening several different dashboards.", "Google live · Meta, TikTok soon"],
+  ["01", "Create once", "Write your headlines, copy and budget one time. Unified Ads builds the campaign for each platform, in that platform's own format.", "Google and Meta live · TikTok soon"],
+  ["02", "Manage in one place", "Every campaign and its status in a single list. Pause, review or delete without opening several different dashboards.", "Google and Meta live · TikTok soon"],
   ["03", "Optimize for conversions", "See what actually converts across platforms, side by side, and move budget to the ads that earn it.", "On the roadmap"],
 ];
 
@@ -213,7 +213,7 @@ export default function Landing() {
           <h2 className="mx-auto max-w-3xl font-display text-5xl font-light leading-[1.02] tracking-tight md:text-7xl">
             Every ad. <em className="text-accent">One place.</em>
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-paper/60">Start with Google today. Meta and TikTok are on the way.</p>
+          <p className="mx-auto mt-6 max-w-md text-paper/60">Google and Meta live today. TikTok is on the way.</p>
           <Link href="/create" className="mt-10 inline-flex items-center gap-3 rounded-full bg-accent px-8 py-4 text-paper transition hover:bg-paper hover:text-ink">
             Create an ad <span>→</span>
           </Link>
